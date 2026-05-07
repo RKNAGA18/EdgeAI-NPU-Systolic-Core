@@ -1,27 +1,87 @@
-/*
- * Copyright (c) 2024 Your Name
- * SPDX-License-Identifier: Apache-2.0
- */
-
 `default_nettype none
 
-module tt_um_example (
-    input  wire [7:0] ui_in,    // Dedicated inputs
-    output wire [7:0] uo_out,   // Dedicated outputs
-    input  wire [7:0] uio_in,   // IOs: Input path
-    output wire [7:0] uio_out,  // IOs: Output path
-    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,      // always 1 when the design is powered, so you can ignore it
-    input  wire       clk,      // clock
-    input  wire       rst_n     // reset_n - low to reset
+module tt_um_RKNAGA18 (
+    input  wire [7:0] ui_in,    // Data Bus
+    output wire [7:0] uo_out,   // Result Bus (lower 8 bits of Acc)
+    input  wire [7:0] uio_in,   // Control Bus
+    output wire [7:0] uio_out,  
+    output wire [7:0] uio_oe,   
+    input  wire       ena,      
+    input  wire       clk,      
+    input  wire       rst_n     
 );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 0;
+    // Control signals from uio
+    wire weight_load = uio_in[0];
+    wire compute_en  = uio_in[1];
+    wire acc_clear   = uio_in[2];
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+    // Configure IOs: uio[0:3] as inputs, others as outputs
+    assign uio_oe = 8'b11110000; 
+    assign uio_out = 8'b0;
 
+    // Internal connections for 2x2 Array
+    wire [7:0] h_wire [2:0][1:0]; // Horizontal data flow
+    wire [7:0] v_wire [1:0][2:0]; // Vertical data flow
+    wire [31:0] acc_out [1:0][1:0];
+
+    // Boundary Assignments: Feed ui_in to the edges
+    assign h_wire[0][0] = ui_in; 
+    assign v_wire[0][0] = ui_in;
+
+    // Instantiate 2x2 Array of Processing Elements
+    genvar i, j;
+    generate
+        for (i = 0; i < 2; i = i + 1) begin : rows
+            for (j = 0; j < 2; j = j + 1) begin : cols
+                mac_pe pe (
+                    .clk(clk),
+                    .rst_n(rst_n),
+                    .weight_in(v_wire[i][j]),
+                    .activation_in(h_wire[i][j]),
+                    .weight_out(v_wire[i][j+1]),
+                    .activation_out(h_wire[i+1][j]),
+                    .accumulator(acc_out[i][j]),
+                    .weight_load(weight_load),
+                    .compute_en(compute_en),
+                    .acc_clear(acc_clear)
+                );
+            end
+        end
+    endgenerate
+
+    // Output the result of the first PE (for testing)
+    assign uo_out = acc_out[0][0][7:0];
+
+endmodule
+
+// --- The Heart of the NPU: Processing Element ---
+module mac_pe (
+    input  wire clk, rst_n,
+    input  wire signed [7:0]  weight_in,
+    input  wire signed [7:0]  activation_in,
+    output reg  signed [7:0]  weight_out,
+    output reg  signed [7:0]  activation_out,
+    output reg  signed [31:0] accumulator,
+    input  wire weight_load, compute_en, acc_clear
+);
+    reg signed [7:0] weight_reg;
+
+    always @(posedge clk) begin
+        if (!rst_n) begin
+            weight_reg <= 0;
+            accumulator <= 0;
+            weight_out <= 0;
+            activation_out <= 0;
+        end else begin
+            if (weight_load) weight_reg <= weight_in;
+            
+            if (acc_clear)   accumulator <= 0;
+            else if (compute_en) begin
+                accumulator <= accumulator + (weight_reg * activation_in);
+                weight_out <= weight_reg; // Pass weight down
+                activation_out <= activation_in; // Pass activation right
+            end
+        end
+    end
 endmodule
