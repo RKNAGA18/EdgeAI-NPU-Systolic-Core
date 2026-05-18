@@ -13,8 +13,8 @@ This is a 2x2 Weight-Stationary Systolic Array designed for AI matrix multiplica
 
 ## How to test
 
-Explain how to use your project
+Set weight_load (uio_in[0]) high to load the 8-bit weights into the processing elements. Then, set compute_en (uio_in[1]) high to stream the 8-bit activations into the array. Read the 32-bit accumulated results from uo_out over 4 clock cycles by toggling the shift_out (uio_in[3]) signal.
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+None.
