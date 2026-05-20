@@ -39,7 +39,7 @@ async def flood_test(dut):
         
         if output_val == 8:
             success = True
-            dut._log.info("🌊 SUCCESS! Caught the wave! The 8x8 Array is mathematically perfect!")
+            dut._log.info("SUCCESS! Caught the wave! The 8x8 Array is mathematically perfect!")
             break
             
     assert success, "The array never output the correct math!"
