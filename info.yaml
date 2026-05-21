@@ -1,6 +1,6 @@
 # Tiny Tapeout project information
 project:
-  title:        "Edge-AI NPU Core (8x Systolic Array)"
+  title:        "Edge-AI NPU Core (8x8 Systolic Array)"
   author:       "R Naga Arjun"
   discord:      ""      # Leave blank if you don't use Discord
   description:  "INT8 Matrix Multiplication Engine with Weight-Stationary Dataflow."
@@ -31,24 +31,24 @@ pinout:
   ui[6]: "data_in[6]"
   ui[7]: "data_in[7]"
 
-  # 8-bit Data Output Bus (Streaming accumulator results)
-  uo[0]: "data_out[0]"
-  uo[1]: "data_out[1]"
-  uo[2]: "data_out[2]"
-  uo[3]: "data_out[3]"
-  uo[4]: "data_out[4]"
-  uo[5]: "data_out[5]"
-  uo[6]: "data_out[6]"
-  uo[7]: "data_out[7]"
+  # 8-bit Data Output Bus (Multiplexed accumulator results)
+  uo[0]: "mux_out[0]"
+  uo[1]: "mux_out[1]"
+  uo[2]: "mux_out[2]"
+  uo[3]: "mux_out[3]"
+  uo[4]: "mux_out[4]"
+  uo[5]: "mux_out[5]"
+  uo[6]: "mux_out[6]"
+  uo[7]: "mux_out[7]"
 
-  # Control Signals (Telling the NPU what to do)
-  uio[0]: "weight_load"  # Set to 1 to load weights into the PEs
-  uio[1]: "compute_en"   # Set to 1 to start multiplying
-  uio[2]: "acc_clear"    # Set to 1 to reset the math to 0
-  uio[3]: ""             # Unused for now
-  uio[4]: ""
-  uio[5]: ""
-  uio[6]: ""
+  # Control Signals (Hardware Multiplexer and Memory Locks)
+  uio[0]: "weight_load_en (1 to lock memory)"
+  uio[1]: "buffer_cs (1 to turn on staging buffer)"
+  uio[2]: "col_sel[0] (Multiplexer Column Select)"
+  uio[3]: "col_sel[1]"
+  uio[4]: "col_sel[2]"
+  uio[5]: "byte_sel[0] (Multiplexer Byte Select)"
+  uio[6]: "byte_sel[1]"
   uio[7]: ""
 
 # Do not change!
