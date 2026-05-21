@@ -8,7 +8,7 @@ project:
   clock_hz:     50000000       # 50 MHz target frequency
 
   # We are starting with 1x1 to prove the layout works before scaling up
-  tiles: "8x2"          
+  tiles: "8x4"          
 
   # MUST match your GitHub username and Verilog module name exactly
   top_module:  "tt_um_npu_core"
