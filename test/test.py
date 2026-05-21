@@ -11,15 +11,18 @@ async def flood_test(dut):
 
     # 2. System Reset 
     # Drive all pins on the FALLING edge so they are stable before the clock strikes
-    await FallingEdge(dut.clk)
+    # 2. System Reset - Hold it longer for the physical gates
     dut.ena.value = 1
     dut.rst_n.value = 0
     dut.uio_in.value = 0
     dut.ui_in.value = 0
     
-    # Hold reset for 5 full clock cycles
-    for _ in range(5): 
+    # Increase from 5 cycles to 20 cycles to ensure the Reset Tree saturates
+    for _ in range(20): 
         await FallingEdge(dut.clk)
+        
+    dut.rst_n.value = 1
+    await FallingEdge(dut.clk)
         
     dut.rst_n.value = 1
 
