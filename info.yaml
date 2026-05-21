@@ -1,6 +1,6 @@
 # Tiny Tapeout project information
 project:
-  title:        "Edge-AI NPU Core (2x2 Systolic Array)"
+  title:        "Edge-AI NPU Core (8x Systolic Array)"
   author:       "R Naga Arjun"
   discord:      ""      # Leave blank if you don't use Discord
   description:  "INT8 Matrix Multiplication Engine with Weight-Stationary Dataflow."
@@ -11,10 +11,13 @@ project:
   tiles: "1x1"          
 
   # MUST match your GitHub username and Verilog module name exactly
-  top_module:  "tt_um_rknaga18_npu"
+  top_module:  "tt_um_npu_core"
 
   source_files:
-    - "project.v"
+    - "input_buffer.sv"
+    - "processing_element.sv"
+    - "systolic_array_8x8.sv"
+    - "tt_um_npu_core.sv"
 
 # The pinout of your project. 
 pinout:
