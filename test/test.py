@@ -7,7 +7,7 @@ async def flood_test(dut):
     """THE WAVEFRONT TEST: Flooding the array to watch the math ripple out in real-time."""
     
     # 1. Start the Clock
-    cocotb.start_soon(Clock(dut.clk, 20, unit="ns").start())
+    cocotb.start_soon(Clock(dut.clk, 20, units="ns").start())
 
     # 2. System Reset
     dut.ena.value = 1
