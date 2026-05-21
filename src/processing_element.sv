@@ -1,19 +1,19 @@
 module processing_element (
     input  logic               clk,
     input  logic               rst_n,
-    input  logic               weight_load_en, // 1 to save incoming data as a Weight
-    input  logic signed [7:0]  act_in,         // 8-bit Activation from Left
-    input  logic signed [31:0] psum_in,        // 32-bit Partial Sum from Top
-    output logic signed [7:0]  act_out,        // 8-bit Activation to Right
-    output logic signed [31:0] psum_out        // 32-bit Partial Sum to Bottom
+    input  logic               weight_load_en,
+    input  logic signed [3:0]  act_in,         // INT4 Activation
+    input  logic signed [15:0] psum_in,        // INT16 Partial Sum
+    output logic signed [3:0]  act_out,
+    output logic signed [15:0] psum_out
 );
-    logic signed [7:0] weight_reg;
+    logic signed [3:0] weight_reg;
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            weight_reg <= 8'sd0;
-            act_out    <= 8'sd0;
-            psum_out   <= 32'sd0;
+            weight_reg <= 4'sd0;
+            act_out    <= 4'sd0;
+            psum_out   <= 16'sd0;
         end else begin
             if (weight_load_en) begin
                 weight_reg <= act_in;  
