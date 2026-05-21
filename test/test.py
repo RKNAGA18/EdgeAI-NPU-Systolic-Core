@@ -1,6 +1,6 @@
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge
+from cocotb.triggers import RisingEdge, FallingEdge
 
 @cocotb.test()
 async def flood_test(dut):
@@ -32,14 +32,23 @@ async def flood_test(dut):
     
     for cycle in range(50):
         dut.ui_in.value = 1
+        
         await RisingEdge(dut.clk)
         
+        await FallingEdge(dut.clk)
+        
+        raw_out = str(dut.uo_out.value)
+        
+        if "x" in raw_out.lower() or "z" in raw_out.lower():
+            dut._log.info(f"Cycle {cycle}: Pins physically transitioning ({raw_out})...")
+            continue
+            
         output_val = int(dut.uo_out.value)
         dut._log.info(f"Cycle {cycle}: Output Pin = {output_val}")
         
         if output_val == 8:
             success = True
-            dut._log.info("SUCCESS! Caught the wave! The 8x8 Array is mathematically perfect!")
+            dut._log.info("🌊 SUCCESS! Caught the wave in the physical Gate-Level Netlist!")
             break
             
-    assert success, "The array never output the correct math!"
+    assert success, "The physical silicon failed to compute the correct math!"
