@@ -14,14 +14,14 @@ module tt_um_npu_core (
     wire weight_load_en = uio_in[0];
     wire buffer_cs      = uio_in[1];
     wire [2:0] col_sel  = uio_in[4:2]; 
-    wire [1:0] byte_sel = uio_in[6:5]; 
+    wire       byte_sel = uio_in[5]; // Only 1 bit needed to split a 16-bit answer!
 
-    logic [63:0] buffered_activations;
-    logic        buffer_ready;
-    logic [255:0] psum_in_flat;
-    logic [255:0] psum_out_flat;
+    logic [31:0]  buffered_activations;
+    logic         buffer_ready;
+    logic [127:0] psum_in_flat;
+    logic [127:0] psum_out_flat;
 
-    assign psum_in_flat = 256'd0;
+    assign psum_in_flat = 128'd0;
 
     input_buffer INPUT_STAGE (
         .clk        (clk),
@@ -41,18 +41,16 @@ module tt_um_npu_core (
         .psum_out_bottom_flat (psum_out_flat)
     );
 
-    logic [31:0] selected_psum;
-    assign selected_psum = (col_sel == 3'd0) ? psum_out_flat[31:0]   :
-                           (col_sel == 3'd1) ? psum_out_flat[63:32]  :
-                           (col_sel == 3'd2) ? psum_out_flat[95:64]  :
-                           (col_sel == 3'd3) ? psum_out_flat[127:96] :
-                           (col_sel == 3'd4) ? psum_out_flat[159:128]:
-                           (col_sel == 3'd5) ? psum_out_flat[191:160]:
-                           (col_sel == 3'd6) ? psum_out_flat[223:192]:
-                                               psum_out_flat[255:224];
+    logic [15:0] selected_psum;
+    assign selected_psum = (col_sel == 3'd0) ? psum_out_flat[15:0]   :
+                           (col_sel == 3'd1) ? psum_out_flat[31:16]  :
+                           (col_sel == 3'd2) ? psum_out_flat[47:32]  :
+                           (col_sel == 3'd3) ? psum_out_flat[63:48]  :
+                           (col_sel == 3'd4) ? psum_out_flat[79:64]  :
+                           (col_sel == 3'd5) ? psum_out_flat[95:80]  :
+                           (col_sel == 3'd6) ? psum_out_flat[111:96] :
+                                               psum_out_flat[127:112];
 
-    assign uo_out = (byte_sel == 2'b00) ? selected_psum[7:0]   :
-                    (byte_sel == 2'b01) ? selected_psum[15:8]  :
-                    (byte_sel == 2'b10) ? selected_psum[23:16] :
-                                          selected_psum[31:24] ;
+    assign uo_out = (byte_sel == 1'b0) ? selected_psum[7:0] : selected_psum[15:8];
+
 endmodule
