@@ -25,6 +25,8 @@ module tb ();
         .uio_oe (uio_oe),   
         .ena    (ena),      
         .clk    (clk),      
-        .rst_n  (rst_n)     
+        .rst_n  (rst_n),
+        .VPWR   (1'b1),
+        .VGND   (1'b0)
     );
 endmodule
