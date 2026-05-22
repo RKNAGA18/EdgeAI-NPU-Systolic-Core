@@ -41,9 +41,6 @@ module tb ();
         $deposit(tb.user_project.VGND, 1'b0);
         $deposit(tb.user_project.VPWR, 1'b1);
         
-        // Sometimes OpenLane names them vssd1 / vccd1
-        $deposit(tb.user_project.vssd1, 1'b0);
-        $deposit(tb.user_project.vccd1, 1'b1);
     end
 `endif
 
