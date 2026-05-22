@@ -68,4 +68,4 @@ By pushing a uniform matrix of 1s through the 8x8 INT4 grid, we mathematically p
  
 **Physical Layout (GDSII)**
 The final Graphic Data System II (GDSII) layout routed by OpenLane, showcasing the dense standard cell placement of the 64 Processing Elements and the horizontal multi-layer metal mesh distributed across the 8x2 physical tile boundary.
-![GDSII Render of the Systolic Array](gds_render.jpg)
+![GDSII Render of the Systolic Array](gds_render.png)
