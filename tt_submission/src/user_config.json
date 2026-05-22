@@ -1,0 +1,11 @@
+{
+  "DESIGN_NAME": "tt_um_npu_core",
+  "VERILOG_FILES": [
+    "dir::input_buffer.sv",
+    "dir::processing_element.sv",
+    "dir::systolic_array_8x8.sv",
+    "dir::tt_um_npu_core.sv"
+  ],
+  "DIE_AREA": "0 0 682.64 511.36",
+  "FP_DEF_TEMPLATE": "dir::../tt/def/tt_block_4x4_pg.def"
+}
