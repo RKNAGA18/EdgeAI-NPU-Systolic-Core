@@ -25,6 +25,26 @@ module tb ();
         .uio_oe (uio_oe),   
         .ena    (ena),      
         .clk    (clk),      
-        .rst_n  (rst_n)        
+        .rst_n  (rst_n)     
     );
+
+`ifdef GL_TEST
+    // -------------------------------------------------------------
+    // THE GLS POWER HACK:
+    // OpenLane sometimes leaves global power nets unconnected in the 
+    // simulation netlist. We force the nets to 1 (Power) and 0 (Ground).
+    // -------------------------------------------------------------
+    initial begin
+        #1; // Wait 1ns for the netlist to instantiate
+        
+        // Try forcing standard SkyWater global nets
+        $deposit(tb.user_project.VGND, 1'b0);
+        $deposit(tb.user_project.VPWR, 1'b1);
+        
+        // Sometimes OpenLane names them vssd1 / vccd1
+        $deposit(tb.user_project.vssd1, 1'b0);
+        $deposit(tb.user_project.vccd1, 1'b1);
+    end
+`endif
+
 endmodule
