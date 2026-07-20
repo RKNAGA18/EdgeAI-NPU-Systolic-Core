@@ -14,9 +14,9 @@ module input_buffer (
             counter  <= 3'd0;
             ready    <= 1'b0;
         end else if (cs) begin
-            data_out <= {data_out[27:0], data_in[3:0]};
+            data_out <= {data_out[23:0], data_in};
             counter  <= counter + 1;
-            ready    <= (counter == 3'd7);
+            ready    <= (counter == 2'd3);
         end else begin
             ready <= 1'b0;
         end
